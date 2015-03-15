@@ -31,7 +31,8 @@ public class AddFloatingActionButton extends FloatingActionButton {
       TypedArray attr = context.obtainStyledAttributes(attributeSet, R.styleable.AddFloatingActionButton, 0, 0);
       if (attr != null) {
         try {
-          mPlusColor = attr.getColor(R.styleable.AddFloatingActionButton_plusIconColor, getColor(android.R.color.white));
+          mPlusColor = attr.getColor(R.styleable.AddFloatingActionButton_plusIconColor,
+                  getColor(android.R.color.white));
         } finally {
           attr.recycle();
         }
@@ -41,6 +42,14 @@ public class AddFloatingActionButton extends FloatingActionButton {
     }
 
     super.init(context, attributeSet);
+  }
+
+  public int getPlusColor() {
+    return mPlusColor;
+  }
+
+  public void setPlusColor(int mPlusColor) {
+    this.mPlusColor = mPlusColor;
   }
 
   @Override
@@ -55,8 +64,10 @@ public class AddFloatingActionButton extends FloatingActionButton {
     final Shape shape = new Shape() {
       @Override
       public void draw(Canvas canvas, Paint paint) {
-        canvas.drawRect(plusOffset, iconHalfSize - plusHalfStroke, iconSize - plusOffset, iconHalfSize + plusHalfStroke, paint);
-        canvas.drawRect(iconHalfSize - plusHalfStroke, plusOffset, iconHalfSize + plusHalfStroke, iconSize - plusOffset, paint);
+        canvas.drawRect(plusOffset, iconHalfSize - plusHalfStroke, iconSize - plusOffset, iconHalfSize
+                + plusHalfStroke, paint);
+        canvas.drawRect(iconHalfSize - plusHalfStroke, plusOffset, iconHalfSize + plusHalfStroke, iconSize
+                - plusOffset, paint);
       }
     };
 

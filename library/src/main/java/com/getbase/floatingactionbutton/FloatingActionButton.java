@@ -59,6 +59,7 @@ public class FloatingActionButton extends ImageButton {
   }
 
   void init(Context context, AttributeSet attributeSet) {
+    setScaleType(ScaleType.CENTER_INSIDE);
     mColorNormal = getColor(android.R.color.holo_blue_dark);
     mColorPressed = getColor(android.R.color.holo_blue_light);
     mIcon = 0;
@@ -87,14 +88,34 @@ public class FloatingActionButton extends ImageButton {
     TypedArray attr = context.obtainStyledAttributes(attributeSet, R.styleable.FloatingActionButton, 0, 0);
     if (attr != null) {
       try {
-        mColorNormal = attr.getColor(R.styleable.FloatingActionButton_colorNormal, getColor(android.R.color.holo_blue_dark));
-        mColorPressed = attr.getColor(R.styleable.FloatingActionButton_colorPressed, getColor(android.R.color.holo_blue_light));
+        mColorNormal = attr.getColor(R.styleable.FloatingActionButton_colorNormal,
+                getColor(android.R.color.holo_blue_dark));
+        mColorPressed = attr.getColor(R.styleable.FloatingActionButton_colorPressed,
+                getColor(android.R.color.holo_blue_light));
         mSize = attr.getInt(R.styleable.FloatingActionButton_size, SIZE_NORMAL);
         mIcon = attr.getResourceId(R.styleable.FloatingActionButton_icon, 0);
       } finally {
         attr.recycle();
       }
     }
+  }
+
+  public int getColorNormal() {
+    return mColorNormal;
+  }
+
+  public void setColorNormal(int mColorNormal) {
+    this.mColorNormal = mColorNormal;
+    updateBackground();
+  }
+
+  public int getColorPressed() {
+    return mColorPressed;
+  }
+
+  public void setColorPressed(int mColorPressed) {
+    this.mColorPressed = mColorPressed;
+    updateBackground();
   }
 
   @Override
@@ -104,6 +125,11 @@ public class FloatingActionButton extends ImageButton {
   }
 
   void updateBackground() {
+
+    // if called before init skip it
+    if (mCircleSize == 0f)
+      return;
+
     float circleLeft = mShadowRadius;
     float circleTop = mShadowRadius - mShadowOffset;
 
@@ -129,6 +155,7 @@ public class FloatingActionButton extends ImageButton {
   }
 
   Drawable getIconDrawable() {
+
     if (mIcon != 0) {
       return getResources().getDrawable(mIcon);
     } else {
@@ -136,10 +163,28 @@ public class FloatingActionButton extends ImageButton {
     }
   }
 
+  @Override
+  public void setImageResource(int resId) {
+    super.setImageResource(resId);
+    updateBackground();
+  }
+
+  @Override
+  public void setImageBitmap(Bitmap bm) {
+    super.setImageBitmap(bm);
+    updateBackground();
+  }
+
+  @Override
+  public void setImageDrawable(Drawable drawable) {
+    super.setImageDrawable(drawable);
+    updateBackground();
+  }
+
   private StateListDrawable createFillDrawable(RectF circleRect) {
     StateListDrawable drawable = new StateListDrawable();
-    drawable.addState(new int[] { android.R.attr.state_pressed }, createCircleDrawable(circleRect, mColorPressed));
-    drawable.addState(new int[] { }, createCircleDrawable(circleRect, mColorNormal));
+    drawable.addState(new int[]{android.R.attr.state_pressed}, createCircleDrawable(circleRect, mColorPressed));
+    drawable.addState(new int[]{}, createCircleDrawable(circleRect, mColorNormal));
     return drawable;
   }
 
@@ -167,19 +212,11 @@ public class FloatingActionButton extends ImageButton {
     final float strokeWidth = getDimension(R.dimen.fab_stroke_width);
     final float halfStrokeWidth = strokeWidth / 2f;
 
-    RectF outerStrokeRect = new RectF(
-        circleRect.left - halfStrokeWidth,
-        circleRect.top - halfStrokeWidth,
-        circleRect.right + halfStrokeWidth,
-        circleRect.bottom + halfStrokeWidth
-    );
+    RectF outerStrokeRect = new RectF(circleRect.left - halfStrokeWidth, circleRect.top - halfStrokeWidth,
+            circleRect.right + halfStrokeWidth, circleRect.bottom + halfStrokeWidth);
 
-    RectF innerStrokeRect = new RectF(
-        circleRect.left + halfStrokeWidth,
-        circleRect.top + halfStrokeWidth,
-        circleRect.right - halfStrokeWidth,
-        circleRect.bottom - halfStrokeWidth
-    );
+    RectF innerStrokeRect = new RectF(circleRect.left + halfStrokeWidth, circleRect.top + halfStrokeWidth,
+            circleRect.right - halfStrokeWidth, circleRect.bottom - halfStrokeWidth);
 
     final Paint paint = new Paint();
     paint.setAntiAlias(true);
@@ -192,20 +229,16 @@ public class FloatingActionButton extends ImageButton {
     canvas.drawOval(outerStrokeRect, paint);
 
     // inner bottom
-    paint.setShader(new LinearGradient(innerStrokeRect.centerX(), innerStrokeRect.top, innerStrokeRect.centerX(), innerStrokeRect.bottom,
-        new int[] { Color.TRANSPARENT, HALF_TRANSPARENT_BLACK, Color.BLACK },
-        new float[] { 0f, 0.8f, 1f },
-        TileMode.CLAMP
-    ));
+    paint.setShader(new LinearGradient(innerStrokeRect.centerX(), innerStrokeRect.top, innerStrokeRect.centerX(),
+            innerStrokeRect.bottom, new int[]{Color.TRANSPARENT, HALF_TRANSPARENT_BLACK, Color.BLACK},
+            new float[]{0f, 0.8f, 1f}, TileMode.CLAMP));
     paint.setAlpha(opacityToAlpha(0.04f));
     canvas.drawOval(innerStrokeRect, paint);
 
     // inner top
-    paint.setShader(new LinearGradient(innerStrokeRect.centerX(), innerStrokeRect.top, innerStrokeRect.centerX(), innerStrokeRect.bottom,
-        new int[] { Color.WHITE, HALF_TRANSPARENT_WHITE, Color.TRANSPARENT },
-        new float[] { 0f, 0.2f, 1f },
-        TileMode.CLAMP
-    ));
+    paint.setShader(new LinearGradient(innerStrokeRect.centerX(), innerStrokeRect.top, innerStrokeRect.centerX(),
+            innerStrokeRect.bottom, new int[]{Color.WHITE, HALF_TRANSPARENT_WHITE, Color.TRANSPARENT},
+            new float[]{0f, 0.2f, 1f}, TileMode.CLAMP));
     paint.setAlpha(opacityToAlpha(0.8f));
     canvas.drawOval(innerStrokeRect, paint);
 
