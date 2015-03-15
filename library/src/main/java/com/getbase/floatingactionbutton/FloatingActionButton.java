@@ -3,6 +3,7 @@ package com.getbase.floatingactionbutton;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.LinearGradient;
@@ -291,6 +292,26 @@ public class FloatingActionButton extends ImageButton {
     updateBackground();
   }
 
+  @SuppressWarnings("deprecation")
+  @SuppressLint("NewApi")
+  private void setBackgroundCompat(Drawable drawable) {
+    if (Build.VERSION.SDK_INT >= VERSION_CODES.JELLY_BEAN) {
+      setBackground(drawable);
+    } else {
+      setBackgroundDrawable(drawable);
+    }
+  }
+
+  @Override
+  public void setVisibility(int visibility) {
+    TextView label = getLabelView();
+    if (label != null) {
+      label.setVisibility(visibility);
+    }
+
+    super.setVisibility(visibility);
+  }
+
   private StateListDrawable createFillDrawable(float strokeWidth) {
     StateListDrawable drawable = new StateListDrawable();
     drawable.addState(new int[] { -android.R.attr.state_enabled }, createCircleDrawable(mColorDisabled, strokeWidth));
@@ -377,18 +398,18 @@ public class FloatingActionButton extends ImageButton {
 
   private int halfTransparent(int argb) {
     return Color.argb(
-        Color.alpha(argb) / 2,
-        Color.red(argb),
-        Color.green(argb),
-        Color.blue(argb)
+            Color.alpha(argb) / 2,
+            Color.red(argb),
+            Color.green(argb),
+            Color.blue(argb)
     );
   }
 
   private int opaque(int argb) {
     return Color.rgb(
-        Color.red(argb),
-        Color.green(argb),
-        Color.blue(argb)
+            Color.red(argb),
+            Color.green(argb),
+            Color.blue(argb)
     );
   }
 
@@ -412,32 +433,13 @@ public class FloatingActionButton extends ImageButton {
       @Override
       public Shader resize(int width, int height) {
         return new LinearGradient(width / 2, 0, width / 2, height,
-            new int[] { topStrokeColor, topStrokeColorHalfTransparent, color, bottomStrokeColorHalfTransparent, bottomStrokeColor },
-            new float[] { 0f, 0.2f, 0.5f, 0.8f, 1f },
-            TileMode.CLAMP
+                new int[]{topStrokeColor, topStrokeColorHalfTransparent, color, bottomStrokeColorHalfTransparent, bottomStrokeColor},
+                new float[]{0f, 0.2f, 0.5f, 0.8f, 1f},
+                TileMode.CLAMP
         );
       }
     });
 
-    return shapeDrawable;    
-
-  @SuppressWarnings("deprecation")
-  @SuppressLint("NewApi")
-  private void setBackgroundCompat(Drawable drawable) {
-    if (Build.VERSION.SDK_INT >= VERSION_CODES.JELLY_BEAN) {
-      setBackground(drawable);
-    } else {
-      setBackgroundDrawable(drawable);
-    }
-  }
-
-  @Override
-  public void setVisibility(int visibility) {
-    TextView label = getLabelView();
-    if (label != null) {
-      label.setVisibility(visibility);
-    }
-
-    super.setVisibility(visibility);
+    return shapeDrawable;
   }
 }
