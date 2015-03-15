@@ -8,6 +8,8 @@ import android.graphics.Paint.Style;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.Shape;
+import android.support.annotation.ColorRes;
+import android.support.annotation.DrawableRes;
 import android.util.AttributeSet;
 
 public class AddFloatingActionButton extends FloatingActionButton {
@@ -27,20 +29,34 @@ public class AddFloatingActionButton extends FloatingActionButton {
 
   @Override
   void init(Context context, AttributeSet attributeSet) {
-    if (attributeSet != null) {
-      TypedArray attr = context.obtainStyledAttributes(attributeSet, R.styleable.AddFloatingActionButton, 0, 0);
-      if (attr != null) {
-        try {
-          mPlusColor = attr.getColor(R.styleable.AddFloatingActionButton_plusIconColor, getColor(android.R.color.white));
-        } finally {
-          attr.recycle();
-        }
-      }
-    } else {
-      mPlusColor = getColor(android.R.color.white);
-    }
+    TypedArray attr = context.obtainStyledAttributes(attributeSet, R.styleable.AddFloatingActionButton, 0, 0);
+    mPlusColor = attr.getColor(R.styleable.AddFloatingActionButton_fab_plusIconColor, getColor(android.R.color.white));
+    attr.recycle();
 
     super.init(context, attributeSet);
+  }
+
+  /**
+   * @return the current Color of plus icon.
+   */
+  public int getPlusColor() {
+    return mPlusColor;
+  }
+
+  public void setPlusColorResId(@ColorRes int plusColor) {
+    setPlusColor(getColor(plusColor));
+  }
+
+  public void setPlusColor(int color) {
+    if (mPlusColor != color) {
+      mPlusColor = color;
+      updateBackground();
+    }
+  }
+
+  @Override
+  public void setIcon(@DrawableRes int icon) {
+    throw new UnsupportedOperationException("Use FloatingActionButton if you want to use custom icon");
   }
 
   @Override
