@@ -8,6 +8,8 @@ import android.graphics.Paint.Style;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.Shape;
+import android.support.annotation.ColorRes;
+import android.support.annotation.DrawableRes;
 import android.util.AttributeSet;
 
 public class AddFloatingActionButton extends FloatingActionButton {
@@ -31,8 +33,7 @@ public class AddFloatingActionButton extends FloatingActionButton {
       TypedArray attr = context.obtainStyledAttributes(attributeSet, R.styleable.AddFloatingActionButton, 0, 0);
       if (attr != null) {
         try {
-          mPlusColor = attr.getColor(R.styleable.AddFloatingActionButton_plusIconColor,
-                  getColor(android.R.color.white));
+          mPlusColor = attr.getColor(R.styleable.AddFloatingActionButton_plusIconColor, getColor(android.R.color.white));
         } finally {
           attr.recycle();
         }
@@ -44,12 +45,27 @@ public class AddFloatingActionButton extends FloatingActionButton {
     super.init(context, attributeSet);
   }
 
+  /**
+   * @return the current Color of plus icon.
+   */
   public int getPlusColor() {
     return mPlusColor;
   }
 
-  public void setPlusColor(int mPlusColor) {
-    this.mPlusColor = mPlusColor;
+  public void setPlusColorResId(@ColorRes int plusColor) {
+    setPlusColor(getColor(plusColor));
+  }
+
+  public void setPlusColor(int color) {
+    if (mPlusColor != color) {
+      mPlusColor = color;
+      updateBackground();
+    }
+  }
+
+  @Override
+  public void setIcon(@DrawableRes int icon) {
+    throw new UnsupportedOperationException("Use FloatingActionButton if you want to use custom icon");
   }
 
   @Override
@@ -64,10 +80,8 @@ public class AddFloatingActionButton extends FloatingActionButton {
     final Shape shape = new Shape() {
       @Override
       public void draw(Canvas canvas, Paint paint) {
-        canvas.drawRect(plusOffset, iconHalfSize - plusHalfStroke, iconSize - plusOffset, iconHalfSize
-                + plusHalfStroke, paint);
-        canvas.drawRect(iconHalfSize - plusHalfStroke, plusOffset, iconHalfSize + plusHalfStroke, iconSize
-                - plusOffset, paint);
+        canvas.drawRect(plusOffset, iconHalfSize - plusHalfStroke, iconSize - plusOffset, iconHalfSize + plusHalfStroke, paint);
+        canvas.drawRect(iconHalfSize - plusHalfStroke, plusOffset, iconHalfSize + plusHalfStroke, iconSize - plusOffset, paint);
       }
     };
 
