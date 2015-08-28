@@ -348,6 +348,7 @@ public class FloatingActionsMenu extends ViewGroup {
     });
 
     addView(mAddButton, super.generateDefaultLayoutParams());
+    mButtonsCount++;
   }
 
   public void addButton(FloatingActionButton button) {
@@ -362,6 +363,7 @@ public class FloatingActionsMenu extends ViewGroup {
   public void removeButton(FloatingActionButton button) {
     removeView(button.getLabelView());
     removeView(button);
+    button.setTag(R.id.fab_label, null);
     mButtonsCount--;
   }
 
@@ -417,12 +419,12 @@ public class FloatingActionsMenu extends ViewGroup {
     switch (mExpandDirection) {
     case EXPAND_UP:
     case EXPAND_DOWN:
-      height += mButtonSpacing * (getChildCount() - 1);
+      height += mButtonSpacing * (mButtonsCount - 1);
       height = adjustForOvershoot(height);
       break;
     case EXPAND_LEFT:
     case EXPAND_RIGHT:
-      width += mButtonSpacing * (getChildCount() - 1);
+      width += mButtonSpacing * (mButtonsCount - 1);
       width = adjustForOvershoot(width);
       break;
     }
@@ -673,9 +675,18 @@ public class FloatingActionsMenu extends ViewGroup {
   }
 
   public void collapse() {
+    collapse(false);
+  }
+
+  public void collapseImmediately() {
+    collapse(true);
+  }
+
+  private void collapse(boolean immediately) {
     if (mExpanded) {
       mExpanded = false;
       mTouchDelegateGroup.setEnabled(false);
+      mCollapseAnimation.setDuration(immediately ? 0 : ANIMATION_DURATION);
       mCollapseAnimation.start();
       mExpandAnimation.cancel();
 
@@ -708,6 +719,13 @@ public class FloatingActionsMenu extends ViewGroup {
 
   public boolean isExpanded() {
     return mExpanded;
+  }
+
+  @Override
+  public void setEnabled(boolean enabled) {
+    super.setEnabled(enabled);
+
+    mAddButton.setEnabled(enabled);
   }
 
   @Override
